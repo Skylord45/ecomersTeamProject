@@ -1,0 +1,224 @@
+<%- include('partials/header') %>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home page</title>
+    <link rel="stylesheet" href="/css/user/homePage.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>    
+
+</head>
+<main>
+  <div class="introduction">
+    <div class="left">
+      <p id="p1">Hot Promotions</p>
+      <p id="p2">Trending Fashion</p>
+      <p id="p3">Great Collection</p>
+      <p id="p4">Save more with coupons & up tp 20% off</p>
+      <button id="shop-now">Shop Now</button>
+    </div>
+
+    <div class="right">
+      <img src="/images/user_homepage_image/home-img.png" alt="">
+    </div>
+  </div>
+
+  <p>Popular Categories</p>
+  <div class='categories' id="categories"></div>
+
+  <div class="shop-item" id="shop-item">
+    <div class="button-group">
+      <div class="button-1">
+        <button>Featured</button>
+      </div>
+      <div class="button-2">
+        <button>Popular</button>
+      </div>
+      <div class="button-3">
+        <button>New Added</button>
+      </div>
+    </div>
+
+    <div class="items" id="items"></div>
+  </div>
+
+
+  <script>
+    async function runScript() {
+
+      let itemDiv = document.getElementsByClassName('items')[0];
+
+      //Adding event listner to shop now button to redirect to othe page
+      let shopNowBtn = document.getElementById('shop-now').addEventListener('click', () => {
+        window.location.href = '/shop';
+      })
+
+      let categoryDiv = document.getElementById('categories');
+
+      async function getCategoryDetail() {
+        let response = await fetch('/getCategoryData');
+
+      let result = await response.json();
+      console.log(result);
+
+      disCategoryData(result.data);
+    }
+
+    async function disCategoryData(data) {
+      data.forEach(category => {
+        categoryDiv.innerHTML += `<div class="cat">
+  <img src="/images/user_homepage_image/category/${category.cat_name}.jpg" alt="" id='${category.cat_id}'>
+  <p>${category.cat_name}</p>
+</div>`
+      });
+
+        // Apply event listner on all category
+        document.querySelectorAll('.cat').forEach(category => {
+          category.addEventListener('click', async (e) => {
+            e.preventDefault();
+
+            console.log(e.target.id);
+            let categoryId = e.target.id;
+
+            window.location.href = `/shopByCategory?id=${categoryId}`;
+          })
+        })
+      }
+
+      async function getData() {
+        let response = await fetch('/getData');
+
+        let result = await response.json();
+        console.log(result);
+
+        return result;
+      }
+      let products = await getData();
+
+      disData(products.data)
+
+      async function disData(data) {
+        itemDiv.innerHTML = '';
+        // Displaying only few data at the home page
+        for (let i = 0; i < data.length - 1; i++) {
+
+          // Getting first images from the array
+          let imageArr = data[i].image_path.split(',');
+          // console.log(imageArr);
+
+          // Populate data on the webpage
+          itemDiv.innerHTML += `
+        <div class="select-item">
+  <img src="${imageArr[0]}" alt="${data[i].product_name}" id='${data[i].vendor_product_id}' class='select-product'>
+  <p>${data[i].product_name}</p>
+  <div class="price-detail">
+    <p class='price'>Rs.${data[i].price}</p>
+    <p class='original-price'>Rs. 70000</p>
+    <img src="/images/user_homepage_image/addToCart.png" alt="" title='Add to cart' class='addToCart' id='cart-${data[i].vendor_product_id}-${data[i].category_id}'>
+    <img src="/images/user_homepage_image/wishlist.png" alt="" title='Wishlist' class='wishlist' id='wishlist-${data[i].vendor_product_id}'>
+  </div>
+</div>`;
+        }
+        console.log(data, 'From the display data function');
+
+        //Get all the products anbd apply event listner on each product
+        document.querySelectorAll('.select-product').forEach(product => {
+          product.addEventListener('click', (e) => {
+            e.preventDefault();
+            console.log('Product id', e.target.id);
+            let productId = e.target.id;
+
+            window.location.href = `/single-product-detail?id=${productId}`;
+          })
+        });
+
+        // Get all the buttons of add to cart
+        document.querySelectorAll('.addToCart').forEach(product => {
+          product.addEventListener('click', async (e) => {
+            e.preventDefault();
+
+            console.log(e.target.id);
+            let productId = e.target.id.split('-')[1];
+            let categoryId = e.target.id.split('-')[2];
+            console.log(productId);
+
+            let response = await fetch('/addInCart', {
+              method: 'POST',
+              headers: {
+                'Content-type': 'application/json'
+              },
+              body: JSON.stringify({
+                productId: productId,
+                userId: '1',
+                categoryId: categoryId
+              })
+            });
+
+                          let result =await response.json();
+                          console.log(result);
+
+                        Swal.fire({
+                            position: "top-end",
+                            icon: "success",
+                            title: "Product added to cart",
+                            showConfirmButton: false,
+                            timer: 1000,
+                            customClass: {
+                                popup: 'custom-alert' 
+                            }
+                        });
+                      });
+                  });
+
+        // Get all the buttons of wishlist
+        document.querySelectorAll('.wishlist').forEach(product => {
+          product.addEventListener('click', async (e) => {
+            e.preventDefault();
+
+            // console.log(e.target.id);
+            let productId = e.target.id.split('-')[1];
+            console.log(productId);
+
+            let response = await fetch('/addInWishlist', {
+              method: 'POST',
+              headers: {
+                'Content-type': 'application/json'
+              },
+              body: JSON.stringify({
+                productId: productId,
+                userId: '1'
+              })
+            });
+
+                          let result =await response.json();
+                          console.log(result);
+
+                        Swal.fire({
+                            position: "top-end",
+                            icon: "success",
+                            title: `${result.message}`,
+                            showConfirmButton: false,
+                            timer: 1000,
+                            customClass: {
+                                popup: 'custom-alert' 
+                            }
+                        });
+                      });
+                  });
+              }
+      
+      // let productsForSearch = await getData();
+      // document.getElementById("search-items").addEventListener('keyup', async (e) => {
+      //   window.location.href = '#shop-item';
+      //   let searchResult = productsForSearch.data.filter((e1) => e1.searching_tags.toLowerCase().includes(e.target.value.toLowerCase()));
+      //   if (searchResult.length) {
+      //     disData(searchResult);
+      //   } else {
+      //     itemDiv.innerHTML = `<div class="no-results">No search results found. Please try a different keyword.</div>`;
+      //   }
+      // });
+    }
+    runScript();
+  </script>
+    </main>

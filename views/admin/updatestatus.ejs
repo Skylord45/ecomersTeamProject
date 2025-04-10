@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+   
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="https://res.cloudinary.com/dozcrwtud/image/upload/v1743746754/White_Minimalist_Online_Fashion_Shop_Bag_Logo_1_od2d4q.png">
+    <title>
+        order : <%= result[0].order_id %> - Ecommerce Admin
+    </title>
+    <link rel="stylesheet" href="/css/admin.updateStatus.css" />
+    <link rel="stylesheet" href="/css/admin.common.css">
+</head>
+
+<body>
+
+
+    <aside class="sidebar">
+        <img id="logo"
+            src="https://res.cloudinary.com/dozcrwtud/image/upload/v1743746754/White_Minimalist_Online_Fashion_Shop_Bag_Logo_1_od2d4q.png">
+        <ul>
+            <li><a href="/admin/dashboard">Main Dashboard</a></li>
+            <li><a href="/admin/vendors">Vendor Details</a></li>
+            <li><a href="/admin/sales">Sales</a></li>
+            <li><a href="/admin/orders">Order Details</a></li>
+            <li><a href="/admin/pending-verification">Pending Verification</a></li>
+            <li><a href="/admin/offers">Offers</a></li>
+            <li><a href="/admin/users">Users</a></li>
+            <li><a href="/admin/available-products">Available Products</a></li>
+            <li><a href="/admin/contacttovendor">Contact To Vendor</a></li>
+            <li><a href="/admin/notifications">Notifications</a></li>
+            <li><a href="/admin/values">Manage Values</a></li>
+            <li><a href="/admin/shipment">Shipment Details</a></li>
+        </ul>
+    </aside>
+
+    <div class="main-content">
+        <div class="header">
+            <h1>Update Order Status</h1>
+
+        </div>
+        <div class="content">
+            <form id="orderupdateform">
+                <label for="fname"><%result[0].order_status%></label>
+                <input name="id" value="<%= result[0].order_id %>" readonly>
+                <% if (result[0].order_status=="pending" ) { %>
+                    <label for="cars">Choose status:</label>
+                    <select name="status" id="status">
+                        <option value="pending" selected>pending</option>
+                        <option value="complete">complete</option>
+                        <option value="processing">processing</option>
+                        <option value="fulfilled">fulfilled</option>
+                        <% } %>
+                            <% if (result[0].order_status=="complete" ) { %>
+                                <label for="cars">Choose status:</label>
+                                <select name="status" id="status">
+                                    <option value="pending">pending</option>
+                                    <option value="complete" selected>complete</option>
+                                    <option value="processing">processing</option>
+                                    <option value="fulfilled">fulfilled</option>
+                                    <% } %>
+                                        <% if (result[0].order_status=="processing" ) { %>
+                                            <label for="cars">Choose status:</label>
+                                            <select name="status" id="status">
+                                                <option value="pending">pending</option>
+                                                <option value="complete">complete</option>
+                                                <option value="processing" selected>processing</option>
+                                                <option value="fulfilled">fulfilled</option>
+                                                <% } %>
+                                                <% if (result[0].order_status=="fulfilled" ) { %>
+                                                    <label for="cars">Choose status:</label>
+                                                    <select name="status" id="status">
+                                                        <option value="pending">pending</option>
+                                                        <option value="complete">complete</option>
+                                                        <option value="processing" selected>processing</option>
+                                                        <option value="fulfilled" selected>fulfilled</option>
+                                                        <% } %>
+                                            </select>
+                                            <input class="button" type="submit" value="update status">
+            </form>
+        </div>
+        
+
+
+
+    </div>
+
+
+</body>
+<script>
+    let form = document.getElementById("orderupdateform")
+    form.addEventListener('submit', async (e) => {
+        e.preventDefault()
+        let formdata = new FormData(form)
+        console.log(formdata);
+        const response = await fetch("/admin/updatestatus", {
+            method: "POST",
+            body: formdata,
+        });
+        if (!response.ok) {
+            throw new Error(`Response status: ${response.status}`);
+        }
+
+        const json = await response.json();
+        let results = json.message;
+        alert(results)
+        window.location.href = "/admin/shipment"
+    })
+</script>
+
+</html>

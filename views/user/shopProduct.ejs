@@ -1,0 +1,169 @@
+<%- include('partials/shopHeader') %>
+
+<head>
+  <title>Shop product</title>
+  <link rel="stylesheet" href="/css/user/shopProduct.css" />
+</head>
+
+<main>
+  <div class="categories" id="categories-div"></div>
+
+  <div class="filter-tree" id="filter-tree"></div>
+
+  <div class="shop-item">
+    <div class="items"></div>
+  </div>
+</main>
+
+<script>
+  async function runScript() {
+    let itemDiv = document.getElementsByClassName("items")[0];
+
+    async function getData() {
+      let response = await fetch("/getData");
+
+      let result = await response.json();
+      console.log(result);
+
+      return result;
+    }
+
+    let products = await getData();
+
+    disData(products.data);
+
+    async function disData(data) {
+      itemDiv.innerHTML = "";
+      data.forEach((element) => {
+        let imageArr = element.image_path.split(",");
+
+        let price = element.price;
+
+        itemDiv.innerHTML += `
+      <div class="select-item">
+  <img src="${imageArr[0]}" alt="${element.product_name}" id='${element.vendor_product_id}'>
+  <p>${element.product_name}</p>
+  <div class="price-detail">
+    <p class='price'>Rs.${element.price}</p>
+    <p class='original-price'>Rs. 70000</p>
+    <img src="/images/user_homepage_image/addToCart.png" alt="" title='Add to cart' class='addToCart' id='cart-${element.vendor_product_id}-${element.category_id}'>
+    <img src="/images/user_homepage_image/wishlist.png" alt="" title='Wishlist' class='wishlist' id='wishlist-${element.vendor_product_id}'>
+  </div>
+</div>
+      `;
+      });
+
+      //Get all the products and apply event listner on each product
+      document.querySelectorAll(".select-item").forEach((product) => {
+        product.addEventListener("click", (e) => {
+          e.preventDefault();
+          console.log("Product id", e.target.id);
+          let productId = e.target.id;
+
+          window.location.href = `/single-product-detail?id=${productId}`;
+        });
+      });
+
+      // Get all the buttons of add to cart
+      document.querySelectorAll(".addToCart").forEach((product) => {
+        product.addEventListener("click", async (e) => {
+          e.preventDefault();
+
+          console.log(e.target.id);
+          let productId = e.target.id.split("-")[1];
+          let categoryId = e.target.id.split("-")[2];
+          console.log(productId);
+
+          let response = await fetch("/addInCart", {
+            method: "POST",
+            headers: {
+              "Content-type": "application/json",
+            },
+            body: JSON.stringify({
+              productId: productId,
+              userId: "1",
+              categoryId: categoryId,
+            }),
+          });
+
+          let result = await response.json();
+          console.log(result);
+        });
+      });
+
+      // Get all the buttons of wishlist
+      document.querySelectorAll(".wishlist").forEach((product) => {
+        product.addEventListener("click", async (e) => {
+          e.preventDefault();
+
+          // console.log(e.target.id);
+          let productId = e.target.id.split("-")[1];
+          console.log(productId);
+
+          let response = await fetch("/addInWishlist", {
+            method: "POST",
+            headers: {
+              "Content-type": "application/json",
+            },
+            body: JSON.stringify({
+              productId: productId,
+              userId: "1",
+            }),
+          });
+
+          let result = await response.json();
+          console.log(result);
+        });
+      });
+    }
+
+    let productsForSearch = await getData();
+    document
+      .getElementById("search-items")
+      .addEventListener("keyup", async (e) => {
+        let searchResult = productsForSearch.data.filter((e1) =>
+          e1.searching_tags.toLowerCase().includes(e.target.value.toLowerCase())
+        );
+        if (searchResult.length) {
+          disData(searchResult);
+        } else {
+          itemDiv.innerHTML = `<div class="no-results">No search results found. Please try a different keyword.</div>`;
+        }
+      });
+  }
+  runScript();
+
+  async function getCategoryData(id) {
+    let response = await fetch("/postCategoryData", {
+      method: "post",
+      headers: {
+        "content-type": "application/json",
+      },
+      body: JSON.stringify({
+        id: id,
+      }),
+    });
+    let result = await response.json();
+    return result;
+  }
+
+  let categories_div = document.getElementById("categories-div");
+  async function printCategories(cat_id) {
+    categories_div.innerHTML = ``;
+
+    let categoryData = await getCategoryData(cat_id);
+    console.log(categoryData);
+
+    categoryData.data.forEach((e) => {
+      categories_div.innerHTML += `<span class='category_names' onclick="goToSubCategory(${e.cat_id})">${e.cat_name}</span>`;
+    });
+  }
+
+  function goToSubCategory(id) {
+    console.log(id);
+    printCategories(id);
+  }
+
+  goToSubCategory(0);
+</script>
+<%- include('partials/footer') %>

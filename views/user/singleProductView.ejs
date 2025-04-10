@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Product Detail</title>
+
+    <!-- For CSS -->
+    <link rel="stylesheet" href="/css/user/singleProductView.css" />
+
+    <!-- For alert message -->
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css"
+    />
+
+    <!-- For star rating -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
+  </head>
+  <body>
+    <header></header>
+    <main>
+      <div class="product-name">
+        <p id="pname">Product name</p>
+      </div>
+
+      <div class="product-details">
+        <div class="left">
+          <div class="image" id="image">
+            <img
+              src="/images/user_homepage_image/category/tshirt.jpg"
+              alt="Product image"
+            />
+          </div>
+
+          <div class="img-group" id="img-group"></div>
+        </div>
+
+        <div class="right">
+          <div class="description">
+            <h1 id="product-name">Item 1</h1>
+            <div class="price">
+              <p id="price">Rs.200</p>
+              <p id="removed-price">Rs.500</p>
+            </div>
+            <p id="description">rgdfvdf</p>
+            <p id="guarrantee">6 month guarrantee</p>
+            <p id="return">15 days Return policy</p>
+            <p id="cod">Cash on deleivery available</p>
+
+            <label for="color">Color </label>
+            <button id="color" style="background-color: white"></button>
+            <br />
+            <label for="size">Size</label>
+            <button id="size">L</button>
+
+            <div class="addTo">
+              <button id="cart">Add to cart</button>
+              <button id="wishlist">
+                <img
+                  src="/images/user_homepage_image/wishlist.png"
+                  alt="wishlist"
+                  title="Wishlist"
+                />
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div id="can-review"></div>
+      <div class="reviews" id="reviews"></div>
+    </main>
+
+    <script>
+      let headerProductName = document.getElementById("pname");
+
+      let productName = document.getElementById("product-name");
+      let price = document.getElementById("price");
+      let removedPrice = document.getElementById("removed-price");
+      let description = document.getElementById("description");
+      let colorButton = document.getElementById("color");
+      let sizeButton = document.getElementById("size");
+
+      let listImageDiv = document.getElementById("image");
+      let allImageDiv = document.getElementById("img-group");
+
+      let addToCart = document.getElementById("cart");
+      let wishlist = document.getElementById("wishlist");
+
+      // For reviews
+      let reviewDiv = document.getElementById("reviews");
+      let userReviewButtonDiv = document.getElementById('can-review');
+
+      // Fetch data for particular category id
+      getData();
+
+      async function getData() {
+        // Get product id from the URL
+        const searchParams = new URLSearchParams(window.location.search);
+        // console.log(searchParams);
+        let productId = searchParams.get("id");
+        console.log("product id =", productId);
+
+        // Fetch API
+        let response = await fetch(
+          `/get-single-product-detail?id=${productId}`
+        );
+        let result = await response.json();
+        console.log("Get single product detail ", result);
+
+        disData(result.data, productId);
+      }
+
+      async function disData(data, productId) {
+        // console.log(data, "From the display data function");
+
+        // Assign values to every div
+        headerProductName.innerText = data[0].product_name;
+        productName.innerText = data[0].product_name;
+        price.innerText = "Rs." + data[0].price;
+
+        description.innerHTML = data[0].description;
+        colorButton.style.backgroundColor = data[0].color;
+        sizeButton.innerText = data[0].size;
+
+        let imageArr = data[0].image_path.split(",");
+        // console.log(imageArr);
+
+        listImageDiv.innerHTML = `<img src="${imageArr[0]}" alt="Product image">`;
+
+        imageArr.forEach((element) => {
+          allImageDiv.innerHTML += `
+                                <div class='images'>
+                                    <img src="${element}" alt="Product image">
+                                </div>`;
+        });
+
+        document.querySelectorAll(".images").forEach((img) => {
+          img.addEventListener("click", (e) => {
+            e.preventDefault();
+
+            let imgPath = e.target.src;
+            // console.log(imgPath);
+
+            listImageDiv.innerHTML = `<img src="${imgPath}" alt="Product image">`;
+          });
+        });
+
+        addToCart.addEventListener("click", async () => {
+          let categoryId = data[0].category_id;
+          // console.log(productId);
+
+          let response = await fetch("/addInCart", {
+            method: "POST",
+            headers: { "Content-type": "application/json" },
+            body: JSON.stringify({
+              productId: productId,
+              userId: "1",
+              categoryId: categoryId,
+            }),
+          });
+
+          let result = await response.json();
+          console.log(result);
+
+          // Alert
+          Swal.fire({
+            position: "top-end",
+            icon: "success",
+            title: "Product added to cart",
+            showConfirmButton: false,
+            timer: 1000,
+            customClass: {
+              popup: "custom-alert",
+            },
+          });
+        });
+
+        wishlist.addEventListener("click", async () => {
+          let response = await fetch("/addInWishlist", {
+            method: "POST",
+            headers: { "Content-type": "application/json" },
+            body: JSON.stringify({
+              productId: productId,
+              userId: "1",
+            }),
+          });
+
+          let result = await response.json();
+          console.log(result);
+
+          // Alert
+          Swal.fire({
+            position: "top-end",
+            icon: "success",
+            title: `${result.message}`,
+            showConfirmButton: false,
+            timer: 1000,
+            customClass: {
+              popup: "custom-alert",
+            },
+          });
+        });
+      }
+
+      // Function for getting reviews
+      getReviews();
+
+      async function getReviews() {
+        // Get product id from the URL
+        const searchParams = new URLSearchParams(window.location.search);
+        // console.log(searchParams);
+        let productId = searchParams.get("id");
+        console.log("product id =", productId);
+
+        // Fetch API
+        let response = await fetch(`/getReviews`, {
+          method: "POST",
+          headers: { "Content-type": "application/json" },
+          body: JSON.stringify({
+            productId: productId,
+            userId : '108'
+          }),
+        });
+
+        let result = await response.json();
+        // console.log("Get reviews ", result);
+
+        disReviewButton(result.data.canUserReview);
+        disReviews(result.data.result, productId);
+      }
+
+      async function disReviewButton(value) {
+        let ans = value;
+        console.log(ans);
+
+        if(value=== true){
+          userReviewButtonDiv.innerHTML=`<button id="add-review">Add your review</button>`
+        }
+
+        document.getElementById('add-review').addEventListener('click',()=>{
+          userReviewButtonDiv.innerHTML+= `<fieldset>
+                                              <form method="post" id="form-data">
+                                                  <label for="user-add-review">Add your review : </label>
+                                                  <input type="text" name="user_review" id="user-add-review">
+                                                  <button type="submit" id="added">Post</button>
+                                              </form>                                             
+                                          </fieldset>`;
+        });
+
+        let form = document.getElementById('form-data');
+
+        form.addEventListener('submit',async(e)=>{
+            e.preventDefault();
+
+            let reviewForm = new FormData(form);
+
+            
+
+        });
+      }
+
+
+      async function disReviews(data, productId) {
+        console.log("inside printing review function", data);
+
+        data.forEach((review) => {  
+          // Define this because if image path is  empty string
+          let imgArr =[];
+          if(review.image_path !==''){
+            imgArr = review.image_path.split(",")          
+          }
+
+          // console.log('Image array : ',imgArr);
+          let imgStrHtml = "";
+          let starHtml =''
+
+          let stars = review.review_rating;
+
+          // Printing ratig star
+          for(let i=0;i<stars;i++){
+            starHtml +='<span class="fa fa-star checked"></span>'
+          }
+          for(let i=0;i<5-stars;i++){
+            starHtml+='<span class="fa fa-star"></span>'
+          }
+
+          // Printing only image part
+          let reviewHtml = `<div class="star">${starHtml}</div>
+                            <div class="user-name">${review.first_name} ${review.last_name}</div>
+                            <div class="review">${review.review_text}</div>`;
+
+          // Printing multiple image added by user
+          imgArr.forEach((element) => {
+            imgStrHtml += `<div class="review"><img src="${element}" alt="Review Image"></div>`;
+          });
+
+          // Assemble all in one
+          reviewDiv.innerHTML += `<fieldset>
+                                    ${reviewHtml}
+                                    ${imgStrHtml}
+                                  </fieldset>`;
+        });
+      }
+    </script>
+  </body>
+</html>
