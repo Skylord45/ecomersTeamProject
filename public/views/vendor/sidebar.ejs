@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <title>Document</title>
+  </head>
+  <style>
+    	.sidebar {
+			width: 200px;
+			height: 100vh;
+			background-color: white;
+			color: #fff;
+			box-sizing: border-box;
+			position: fixed;
+      border-right: 1px solid black;
+      
+		}
+
+		.sidebar a {
+			display: block;
+			color: black;
+			text-decoration: none;
+			padding: 10px;
+			margin-bottom: 10px;
+			transition: background-color 0.3s;
+		}
+  </style>
+  <body>
+    <div class="sidebar">
+			<a href="/vendor/dashboard"><i class="fa-solid fa-house"></i> Dashboard</a>
+            <br><br><br>
+			<a href="/vendor/getProducts"><i class="fa-brands fa-product-hunt"></i> Products</a>
+            <br><br><br>
+			<a href="#" onclick="Orders()"><i class="fa-brands fa-first-order"></i> Orders</a>
+            <br><br><br>
+			<a href="#" onclick="Sales()"><i class="fa-solid fa-chart-simple"></i> Sales</a>
+            <br><br><br>
+            <a href="/vendor/addProducts"><i class="fa-solid fa-plus"></i> Add Products</a>
+            <br><br><br>
+            
+            <a href="#" onclick="ReturnRequests()"><i class="fa-solid fa-rotate-left"></i> Return Requests</a>
+            <br><br><br>
+            <a href="#" onclick="ContactAdmins()"><i class="fa-solid fa-address-book"></i> Contact Admins</a>
+            <br><br><br>
+			
+		</div>
+  </body>
+</html>

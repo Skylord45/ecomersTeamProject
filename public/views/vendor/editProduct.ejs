@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+    }
+    main {
+      margin-left: 11%;
+      border: 1px solid black;
+      padding: 1%;
+    }
+    .productFormDiv #productFormId {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .productFormDiv #productFormId .productImg {
+      border: 2px solid #ecf0f4;
+      display: flex;
+      height: 20vh;
+    }
+    .productFormDiv #productFormId .productImg .productImgLeft {
+      border: 1px solid black;
+    }
+    .productFormDiv #productFormId .productImg .productImgRight {
+      border: 1px solid black;
+    }
+    .productFormDiv
+      #productFormId
+      .productImg
+      .productImgRight
+      .previewArea
+      img {
+      height: 20vh;
+    }
+    .productFormDiv #productFormId .ItemDetails {
+      border: 2px solid #ecf0f4;
+    }
+    .productFormDiv #productFormId .ItemDetails h2 {
+      background-color: #ecf0f4;
+    }
+    .productFormDiv #productFormId .ItemDetails .ItemDetails1 {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      margin-bottom: 10px;
+    }
+    .productFormDiv #productFormId .ItemDetails .ItemDetails3 {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      margin-top: 10px;
+    }
+    .productFormDiv #productFormId .CategoryDiv {
+      border: 2px solid #ecf0f4;
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+    .productFormDiv #productFormId .CategoryDiv h2 {
+      background-color: #ecf0f4;
+    }
+    .productFormDiv #productFormId .PriceDiv {
+      border: 2px solid #ecf0f4;
+    }
+    .productFormDiv #productFormId .PriceDiv h2 {
+      background-color: #ecf0f4;
+    }
+    .productFormDiv #productFormId .PriceDiv .PriceDiv1 {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+  </style>
+  <body>
+    <%- include("sidebar.ejs") %>
+
+    <main>
+      <h1>Add Products Form</h1>
+
+      <div class="productFormDiv">
+        <form action="" id="productFormId">
+          <div class="productImg">
+            <div class="productImgLeft">
+              <label for="productImgId">Item Photos</label><br />
+              <input
+                type="file"
+                id="productImgId"
+                name="productImgs"
+                onchange="preview(this)"
+                multiple
+              />
+            </div>
+            <div class="productImgRight" id="imagePreview">
+              <div class="previewArea"></div>
+            </div>
+          </div>
+
+          <div class="ItemDetails">
+            <h2>Item Details</h2>
+            <div class="ItemDetails1">
+              <label for="titleId">Title</label>
+              <input type="text" name="title" id="titleId" />
+              <label for="descriptionId">Description</label>
+              <textarea name="description" id="descriptionId"></textarea>
+            </div>
+            <!-- <div class="ItemDetails2">
+                        <label for="colorId">Color</label>
+                        <input type="text" name="color" id="colorId">
+                        <label for="sizeId">Size</label>
+                        <input type="text" name="size" id="sizeId">
+                    </div> -->
+            <!-- <div class="ItemDetails3">
+                        <label for="stockId">Stock</label>
+                        <input type="text" name="stock" id="stockId">
+                    </div> -->
+          </div>
+
+          <!-- <div class="CategoryDiv">
+                    <h2>Category</h2>
+                    <div class="Category" id="Category">
+                        
+                    </div>
+                    <div class="SubCategory1" id="SubCategory1">
+                        
+                    </div>
+                    <div class="SubCategory2" id="SubCategory2">
+                        
+                    </div>
+                    <div class="SubCategory3" id="SubCategory3">
+                        
+                    </div>
+                </div> -->
+
+          <!-- <div class="PriceDiv">
+                    <h2>Price</h2>
+                    <div class="PriceDiv1">
+                        <label for="priceId">Price</label>
+                        <input type="text" name="price" id="priceId">
+                    </div>
+                </div> -->
+
+          <input type="submit" value="submit" name="" id="" />
+        </form>
+      </div>
+    </main>
+  </body>
+  <script>
+    function preview(elem, output = "") {
+      Array.from(elem.files).map((file) => {
+        const blobUrl = window.URL.createObjectURL(file);
+        output += `<img src=${blobUrl} width="100" height="100">`;
+      });
+      document.getElementsByClassName("productImgRight")[0].innerHTML = output;
+      // elem.nextElementSibling.innerHTML = output
+    }
+
+    async function getCategories() {
+      try {
+        const url = `/vendor/getCategories`;
+        const response = await fetch(url);
+        const json = await response.json();
+        // console.log(json);
+
+        let category_div = document.getElementById("Category");
+
+        html_code = `<label for="categoryId">Category</label><br><select name="category" id="categoryId"><option value="">Select Category</option>`;
+
+        for (let i = 0; i < json.data.categoryResult.length; i++) {
+          html_code += `<option value="${json.data.categoryResult[i].cat_id}">${json.data.categoryResult[i].cat_name}</option>`;
+        }
+
+        html_code += `</select>`;
+
+        category_div.innerHTML = html_code;
+
+        document
+          .getElementById("categoryId")
+          .addEventListener("change", handleCategoryChange);
+      } catch (error) {
+        console.log(error);
+      }
+    }
+
+    getCategories();
+
+    function handleCategoryChange() {
+      var category_value = document.getElementById("categoryId").value;
+
+      if (category_value) {
+        getSubCategory(category_value);
+      }
+    }
+
+    async function getSubCategory(category_value) {
+      console.log("co: ", category_value);
+      const json = await getSubCategoryDetails(category_value);
+
+      let subCat1_div = document.getElementById("SubCategory1");
+
+      html_code = `<label for="subCategoryId">Sub Category</label><br><select name="subCategory1" id="subCategory1Id"><option value="">Select Category</option>`;
+
+      for (let i = 0; i < json.data.subCategoryResult.length; i++) {
+        html_code += `<option value="${json.data.subCategoryResult[i].cat_id}">${json.data.subCategoryResult[i].cat_name}</option>`;
+      }
+
+      html_code += `</select>`;
+
+      subCat1_div.innerHTML = html_code;
+
+      document
+        .getElementById("subCategory1Id")
+        .addEventListener("change", handleSubCategoryChange);
+    }
+
+    function handleSubCategoryChange() {
+      var subCategory_value = document.getElementById("subCategory1Id").value;
+
+      if (subCategory_value) {
+        getSubCategory2(subCategory_value);
+      }
+    }
+
+    async function getSubCategory2(category_value) {
+      console.log("co: ", category_value);
+      const json = await getSubCategoryDetails(category_value);
+
+      let subCat1_div = document.getElementById("SubCategory2");
+
+      html_code = `<label for="subCategory2Id">Sub Category</label><br><select name="subCategory2" id="subCategory2Id"><option value="">Select Category</option>`;
+
+      for (let i = 0; i < json.data.subCategoryResult.length; i++) {
+        html_code += `<option value="${json.data.subCategoryResult[i].cat_id}">${json.data.subCategoryResult[i].cat_name}</option>`;
+      }
+
+      html_code += `</select>`;
+
+      subCat1_div.innerHTML = html_code;
+
+      document
+        .getElementById("subCategory2Id")
+        .addEventListener("change", handleSubCategory2Change);
+    }
+
+    function handleSubCategory2Change() {
+      var subCategory_value = document.getElementById("subCategory2Id").value;
+
+      if (subCategory_value) {
+        getSubCategory3(subCategory_value);
+      }
+    }
+
+    async function getSubCategory3(category_value) {
+      // console.log('co: ',category_value);
+      const json = await getSubCategoryDetails(category_value);
+
+      let subCat1_div = document.getElementById("SubCategory3");
+
+      html_code = `<label for="subCategory3Id">Sub Category</label><br><select name="subCategory3" id="subCategory3Id"><option value="">Select Category</option>`;
+
+      for (let i = 0; i < json.data.subCategoryResult.length; i++) {
+        html_code += `<option value="${json.data.subCategoryResult[i].cat_id}">${json.data.subCategoryResult[i].cat_name}</option>`;
+      }
+
+      html_code += `</select>`;
+
+      subCat1_div.innerHTML = html_code;
+
+      // document.getElementById('subCategory3Id').addEventListener("change",handleSubCategory2Change)
+    }
+
+    async function getSubCategoryDetails(category_value) {
+      const url = "/vendor/getSubCategory";
+      try {
+        const response = await fetch(url, {
+          headers: {
+            "Content-Type": "application/json",
+          },
+          method: "POST",
+          body: JSON.stringify({ category_id: category_value }),
+        });
+
+        const json = await response.json();
+        console.log(json);
+        return json;
+      } catch (error) {
+        console.error(error);
+      }
+    }
+
+    document
+      .getElementById("productFormId")
+      .addEventListener("submit", async (e) => {
+        e.preventDefault();
+
+        const formdata = new FormData(document.getElementById("productFormId"));
+        console.log(formdata);
+
+        const urlParams = new URLSearchParams(window.location.search);
+        const vendorProductId = urlParams.get("vendorProductID");
+        console.log("vendorProductID:", vendorProductId);
+
+        const url = `/vendor/postEditProductDetails?vendorProductID=${vendorProductId}`;
+        try {
+          const response = await fetch(url, {
+            method: "POST",
+            body: formdata,
+          });
+
+          const json = await response.json();
+          console.log("pro:", json.data.success);
+
+          if (json.data.success) {
+            alert("product updated successfully");
+            window.location.href = "/vendor/getProducts";
+          }
+        } catch (error) {
+          console.error(error);
+        }
+      });
+
+    async function getData() {
+      const urlParams = new URLSearchParams(window.location.search);
+      const vendorProductId = urlParams.get("vendorProductID");
+      console.log("vendorProductID:", vendorProductId);
+
+      const url = `/vendor/getEditProductDetails?vendorProductID=${vendorProductId}`;
+
+      try {
+        const response = await fetch(url);
+        if (!response.ok) {
+          throw new Error(`Response status: ${response.status}`);
+        }
+
+        const json = await response.json();
+        console.log("Edit product detail result", json);
+        console.log(
+          "Product Category is",
+          json.data.editProductDeatilResult[0].parent_cat_name
+        );
+        console.log(
+          "image path",
+          json.data.editProductDeatilResult[0].image_path
+        );
+
+        let images = json.data.editProductDeatilResult[0].image_path
+          .toString()
+          .split(",");
+        console.log(images);
+        let html = ``;
+        images.forEach((e) => {
+          html += `<img src = '${e}' width="100" height="100"></img>`;
+        });
+        console.log(html);
+        //     function preview(elem, output = '') {
+        //     Array.from(elem.files).map((file) => {
+        //         const blobUrl = window.URL.createObjectURL(file)
+        //         output+=`<img src=${e}>`
+        //     })
+        //     console.log("OUTPUT",output);
+        //     document.getElementsByClassName('previewArea')[0].innerHTML = output
+        //     // elem.nextElementSibling.innerHTML = output
+        // }
+        document.getElementById("imagePreview").innerHTML = html;
+        document.getElementById("titleId").value =
+          json.data.editProductDeatilResult[0].product_name;
+        document.getElementById("descriptionId").value =
+          json.data.editProductDeatilResult[0].description;
+      } catch (error) {
+        console.log(error);
+      }
+    }
+    getData();
+  </script>
+</html>

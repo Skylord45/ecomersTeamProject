@@ -1,0 +1,39 @@
+<%- include('partials/header') %>
+
+<head>
+  <title>Terms & Conditions</title>
+  <link rel="stylesheet" href="/css/termsAndConditions.css">
+</head>
+<div class="container">
+  <h1>Terms & Conditions</h1>
+  <p>By using our website, you agree to abide by our terms and conditions outlined below.</p>
+<div class="arrivingdata" id="arrivingdata">
+</div>
+</div>
+
+<script>
+  async function fetchtandc() {
+    document.getElementById("arrivingdata").innerHTML = "";
+      const response = await fetch("/termsAndConditions", {
+        method: "POST",
+      });
+      if (!response.ok) {
+        throw new Error(`Response status: ${response.status}`);
+      }
+      const json = await response.json();
+      let results = json.data;
+      let tablebody = document.getElementById("arrivingdata");
+      results.forEach((result) => {
+        let div = document.createElement('div');
+      div.classList.add("section")
+        const row = `<div class="section">
+    <h2>${result.title}</h2>
+    <p>${result.content}</p>
+  </div>`;
+  div.innerHTML += row;
+  tablebody.appendChild(div)
+      });
+    }
+    fetchtandc()
+</script>
+<%- include('partials/footer') %>

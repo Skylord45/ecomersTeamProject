@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Document</title>
+</head>
+<style>
+  .registration-div {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 30%;
+    border: 1px solid hsl(113, 15%, 90%);
+    padding: 15px;
+  }
+
+  .container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 15px;
+  }
+
+  .container input {
+    width: 100%;
+    height: 30px;
+    border: 1px solid hsl(113, 15%, 90%);
+    outline: none;
+  }
+
+  .container input:focus {
+    border: 2px solid hsl(176, 88%, 27%);
+  }
+
+  .container h3 {
+    margin: 0px;
+  }
+
+  .container-center {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .container-center input {
+    margin: 0px 5px;
+    width: 50%;
+    height: 35px;
+    font-weight: 500;
+    background-color: hsl(176, 88%, 27%);
+    border-color: hsl(176, 88%, 27%);
+    color: white;
+    border-radius: 5px;
+    outline: none;
+  }
+
+  .container-center input:hover,
+  input:focus {
+    background-color: transparent;
+    border: 2px solid;
+    border-color: hsl(176, 88%, 27%);
+    color: hsl(176, 88%, 27%);
+    border-radius: 5px;
+    outline: none;
+  }
+</style>
+
+<body>
+  <div class="registration-div">
+    <form action="/auth/create-password-page" method="post" enctype="multipart/form-data" id="form">
+      <div class="container">
+        <!-- <label for="otp">Enter Your Otp:</label> -->
+        <input type="text" name="otp" placeholder="Enter Your Otp" />
+      </div>
+      <div class="container-center">
+        <input type="submit" value="Submit" id="submitBtn" />
+      </div>
+    </form>
+  </div>
+
+  <script>
+    const submitButton = document.getElementById('submitBtn');
+
+    submitButton.addEventListener('click', async (e) => {
+      e.preventDefault();
+      const otpToken = localStorage.getItem('otpToken');
+      const form = document.getElementById("form");
+      const formData = new FormData(form);
+      const response = await fetch('/auth/otp-verification-submit', {
+        method: "post",
+        headers: {
+          Authorization: otpToken
+        },
+        body: formData
+      })
+      const result = await response.json();
+      if (!response.ok) {
+        alert(result.message);
+        localStorage.removeItem('otpToken');
+        location.replace("/auth/signup");
+      } else {
+        localStorage.removeItem('otpToken');
+        alert(result.message);
+        document.getElementById('form').reset();
+        document.getElementById('form').submit()
+      }
+    })
+  </script>
+</body>
+
+</html>

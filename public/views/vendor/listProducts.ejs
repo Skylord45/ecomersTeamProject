@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <style>
+    *{
+      margin: 0;
+      padding: 0;
+    }
+   h1{
+    margin-left: 250px;
+    /* border: 1px solid black; */
+  
+   }
+   body{
+    background-color:#e9f6eb;
+ 
+   }
+   .ProductDiv{
+    border:1px solid black;
+    width: 500px;
+    height: 200px;
+    margin-left: 250px;
+    margin-bottom: 10px;
+    display: flex;
+    background-color: white;
+
+   
+   }
+   /* #imagediv{
+    
+    height:100%;
+    border: 1px solid black;
+    margin-left: 250px;
+
+   } */
+   .imgid{
+   width: 50%;
+    height:100%;
+
+   }
+   .listProductsDetails{
+    padding-left: 10px;
+    display: flex;
+    flex-direction: column;
+   }
+   .editStockButton{
+    margin-top: 10px;
+    margin-left: 150px;
+   }
+   #popup{
+    display:none;
+    width: 100%;
+    height:100%;
+    border: 1px solid black;
+   
+    position: fixed;
+    top: 0;
+    /* display: flex;
+    align-items: center;
+    justify-content: center; */
+   }
+   .popupdiv{
+    background-color: white;
+    height: 100px;
+    width: 200px;
+    position: relative;
+    top: 20%;
+    left: 50%;
+    border: 1px solid black;
+   }
+   .topdiv{
+    display: flex;
+   }
+   #crossIcon{
+    margin-left: 35%;
+   }
+  
+
+
+
+  </style>
+  <body>
+    <%- include("sidebar.ejs") %>
+    <h1>Product Listing</h1>
+   
+      <div id="listProducts">
+       
+      </div>
+
+      <div id="popup">
+        <div class="popupdiv">
+          <div class="topdiv">
+            <h3>add stocks</h3>
+          <i class="fa-solid fa-xmark" id="crossIcon" onclick="closePopUp()"></i>
+
+
+          </div>
+          
+          <input type="text" id="stockInput" placeholder="Add Stocks">
+          <input id="stockSubmitID" type="submit" value="submit" onclick="submitStock()">
+     
+      </div>
+   
+  
+  </body>
+  <script>
+    const getProducts = async () => {
+      const url = "/vendor/getAllProducts";
+      try {
+        const response = await fetch(url, {
+          method: "GET",
+
+          headers: {
+            // "Authorization":`Barer ${localStorage.getItem("token")}`
+          },
+        });
+
+        const results = await response.json();
+        console.log("All products result", results);
+        let mainProductDiv = document.getElementById('listProducts')
+       console.log(results.data.showProductsResult.length);
+     
+        let str = ''
+
+        for(let i=0 ; i<results.data.showProductsResult.length; i++){
+          let imagesArray = results.data.showProductsResult[i].image_path.split(',')
+          str+=`<div class="ProductDiv" >
+
+        
+       <img class="imgid" src="${imagesArray[0]}">
+  
+      <div class="listProductsDetails">
+        <button class="editStockButton" onclick="editStock(this)" id=${results.data.showProductsResult[i].vendor_product_id}>Edit stock</button>
+        <p>${results.data.showProductsResult[i].product_name}<i onclick="edit(this)" id=${results.data.showProductsResult[i].vendor_product_id} class="fa-solid fa-pen"></i> <i class="fa-solid fa-trash"></i></p>
+        <div class="otherDetail">
+        <p> Available stock : ${results.data.showProductsResult[i].available_stock}</p>
+        <p> Stock : ${results.data.showProductsResult[i].stock}</p>
+        <p> Size : ${results.data.showProductsResult[i].size}</p>
+        <p> Color : ${results.data.showProductsResult[i].color}</p>
+          </div>
+     
+        </div>
+          
+        </div>`;
+
+        }
+        mainProductDiv.innerHTML = str
+     
+
+        if (results.data.success) {
+          // alert("Product details");
+        } else {
+          alert(results.message);
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
+    getProducts();
+
+
+    async function edit(btn){
+      console.log("View of product id ",btn.id);
+      window.location.href = `/vendor/editProduct?vendorProductID=${btn.id}`;     
+    }
+
+
+
+
+    async function editStock(btn){
+      console.log("stock button id",btn.id);
+      document.getElementById('popup').style.display = "block";
+      // let inputValue = document.getElementById('stockInput').value;
+      document.getElementById('stockSubmitID').onclick = async function(){
+      let inputValue = document.getElementById('stockInput').value;
+      await submitStock(btn.id,inputValue)
+      }
+      // console.log("input value of stock",inputValue);
+    }
+    
+    function closePopUp(){
+      document.getElementById('popup').style.display = "none";
+    }
+
+
+    async function submitStock(VendorProductID,inputValue){
+      console.log("submit button id of edit stock popup",VendorProductID);
+
+            const url = "/vendor/editStock";
+            try{
+              const response = await fetch(url,{
+                method:"POST",
+                headers:{
+                  "Content-Type": "application/json"
+
+                },
+                body: JSON.stringify({VendorProductID:VendorProductID , inputValue:inputValue})
+              })
+
+              const results = await response.json();
+              if(results.data.success){
+                alert("Added successfully")
+                document.getElementById('popup').style.display = "none";
+              }
+              console.log(results);
+            }catch(error){
+              console.log(error);
+            }
+
+    }
+  </script>
+</html>

@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<style>
+  *{
+      margin: 0;
+      padding: 0;
+    }
+    main{
+      margin-left: 15%;
+      padding: 2%;
+    }
+    .h2Heading{
+        margin-left: 15%;
+    }
+    .orderchartDIv{
+        width: 600px;
+        height: 700px;
+        border: 1px solid black;
+        margin-bottom: 20px;
+
+    }
+    /* .RevenueChart{
+        width: 400px;
+        height: 500px;
+        margin-left: 20%;
+        border: 1px solid black;
+
+    } */
+    .barpieChart{
+        /* width: 5000px; */
+        display: flex;
+    }
+    .InventoryStatus{
+        width: 600px;
+        height: 400px;
+        border: 1px solid black;
+        margin-bottom: 150px;
+      
+    }
+
+    .ShippingStatus{
+        margin-left: 15%;  
+        width: 400px;
+        height: 600px;
+        border: 1px solid black;
+        margin-bottom: 100px;
+
+    }
+   
+    
+</style>
+<body>
+    <%- include("sidebar.ejs") %>
+    <main>
+      <div class="barpieChart">
+        <div class="divmain">
+            <div class="orderchartDIv">
+                <h2 class="h2Heading">Order Chart</h2>
+                <div>
+                    <canvas id="barChart1"></canvas>
+                  </div>
+            </div>
+    
+            <div class="InventoryStatus">
+                <h2 class="h2Heading">Inventory Status</h2>
+                <div>
+                    <canvas id="barChart2"></canvas>
+                  </div>
+            </div>
+        </div>
+
+        <div class="ShippingStatus">
+            <h2 class="h2Heading">Shipping Status</h2>
+            <div>
+                <canvas id="piechart"></canvas>
+              </div>
+        </div>
+    </div>
+    </main>
+    
+  
+      <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+      
+<script>
+    const getOrderChartData = async () => {
+        const url = "/vendor/getOrderChartData";
+        try {
+        const response = await fetch(url, {
+          method: "GET",
+
+          headers: {
+            // "Authorization":`Barer ${localStorage.getItem("token")}`
+          },
+        });
+
+        const results = await response.json();
+        let orderChart = results.data.orderChartDetails;
+        let keys = [];
+        let values = [];
+        orderChart.forEach(element => {
+  
+            keys.push(element.product_name);
+            values.push(element.TotalOrders);
+        });
+        console.log("Keys array is ",keys);
+        console.log("Values array is ",values);
+        
+        const orderBarChart = document.getElementById('barChart1');
+      
+      new Chart(orderBarChart, {
+        type: 'doughnut',
+        data: {
+            labels: keys,
+          datasets: [{
+            label: '',
+            data: values,
+            borderWidth: 1
+          }]
+        },
+        options: {
+          scales: {
+            y: {
+              beginAtZero: true
+            }
+          }
+        }
+      });
+        
+
+        
+      } catch (error) {
+        console.log(error);
+      }
+
+    }
+    getOrderChartData()
+
+    const getinventoryChartData = async () => {
+        const url = "/vendor/getInventoryData";
+        try {
+        const response = await fetch(url, {
+          method: "GET",
+
+          headers: {
+            // "Authorization":`Barer ${localStorage.getItem("token")}`
+          },
+        });
+
+        const results = await response.json();
+        console.log("result of stock details",results);
+        let inventoryChart = results.data.getInventoryChartData;
+        let keys = [];
+        let values = [];
+        inventoryChart.forEach(element => {
+  
+            keys.push(element.product_name);
+            values.push(element.available_stock);
+        });
+        console.log("Keys array is ",keys);
+        console.log("Values array is ",values);
+        
+        const barChart2 = document.getElementById('barChart2');
+      
+      new Chart(barChart2, {
+        type: 'bar',
+        data: {
+            labels: keys,
+          datasets: [{
+            data: values,
+            borderWidth: 1
+          }]
+        },
+        options: {
+          scales: {
+            y: {
+              beginAtZero: true
+            }
+          }
+        }
+      });
+        
+
+      } catch (error) {
+        console.log(error);
+      }
+
+    }
+    getinventoryChartData()
+
+    const getShipStatusChartData = async () => {
+        const url = "/vendor/getShippingData";
+        try {
+        const response = await fetch(url, {
+          method: "GET",
+
+          headers: {
+            // "Authorization":`Barer ${localStorage.getItem("token")}`
+          },
+        });
+
+        const results = await response.json();
+        console.log("result of shipping details",results);
+        let shippingStatusChart = results.data.shippingStatusResult;
+        let keys = [];
+        let values = [];
+        shippingStatusChart.forEach(element => {
+  
+            keys.push(element.shipment_status);
+            values.push(element.totalorders);
+        });
+        console.log("Keys array is ",keys);
+        console.log("Values array is ",values);
+        
+        const piechart = document.getElementById('piechart');
+      
+      new Chart(piechart, {
+        type: 'pie',
+        data: {
+            labels: keys,
+          datasets: [{
+            data: values,
+            borderWidth: 1
+          }]
+        },
+        options: {
+          scales: {
+            y: {
+              beginAtZero: true
+            }
+          }
+        }
+      });
+          
+      } catch (error) {
+        console.log(error);
+      }
+
+    }
+    getShipStatusChartData()
+
+
+</script>
+
+</body>
+</html>

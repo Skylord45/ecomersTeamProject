@@ -1,0 +1,461 @@
+<%- include('partials/header') %>
+
+<head>
+  <title>Checkout</title>
+  <style>
+    *body {
+      margin: 0;
+      padding: 0;
+      font-family: Verdana, Geneva, Tahoma, sans-serif;
+    }
+
+    main {
+      margin: 70px;
+      font-family: Verdana, Geneva, Tahoma, sans-serif;
+
+    }
+
+    main .container .cart {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+    }
+
+    main .container .cart .cart-row {
+      height: 20%;
+      display: grid;
+      grid-template-columns: 1fr 2fr 1fr 1fr 1fr 1fr;
+      align-items: center;
+    }
+
+    main .container .cart .cart-row img {
+      height: 100px;
+      width: auto;
+    }
+
+    main .container .cart .cart-row input {
+      width: 50%;
+      padding: 5px;
+      font-size: 14px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      outline: none;
+    }
+
+    main .container .cart .cart-row .edit {
+      padding: 5px;
+      width: 50px;
+    }
+
+    main .order-total {
+      border: 1px solid #ccc;
+      width: 80%;
+      color: grey;
+      padding: 0 20px 0;
+      margin-top: 50px;
+    }
+
+    table {
+      width: 100%;
+      color: black;
+      border-style: none;
+      border: 1px solid #ccc;
+      border-collapse: collapse;
+    }
+
+    th,
+    td {
+      border: 1px solid #ddd;
+      padding: 8px;
+      text-align: left;
+    }
+
+    th {
+      background-color: #f2f2f2;
+    }
+
+    /* button {
+    justify-content: center;
+    align-items: center;
+    padding: 5px 10px;
+    margin: 20px 0 20px;
+    border:rgba(5, 145, 145, 0.808);
+    border-radius: 5px;  
+    width: 200px;         
+    height: 50px;
+    font-size: 15px;
+    color: white;
+    background-color: rgba(5, 145, 145, 0.808);
+}
+
+button:hover {
+    background-color: white;
+    color: rgba(5, 145, 145, 0.808);
+    border: 2px solid rgba(5, 145, 145, 0.808);
+} */
+    .itemremove {
+      width: 100px;
+      height: 50px;
+    }
+
+    .payment-methods {
+      margin-top: 20px;
+      padding: 20px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .payment-methods-title {
+      font-size: 18px;
+      font-weight: bold;
+      margin-bottom: 10px;
+    }
+
+    .payment-methods-form {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .payment-method-label {
+      font-size: 16px;
+      margin-bottom: 10px;
+    }
+
+    .payment-method-select {
+      width: 100%;
+      padding: 10px;
+      font-size: 16px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+
+    .card-number-label {
+      font-size: 16px;
+      margin-bottom: 10px;
+    }
+
+    .card-number-input {
+      width: 100%;
+      padding: 10px;
+      font-size: 16px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+
+    .expiry-date-label {
+      font-size: 16px;
+      margin-bottom: 10px;
+    }
+
+    .expiry-date-input {
+      width: 100%;
+      padding: 10px;
+      font-size: 16px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+
+    .cvv-label {
+      font-size: 16px;
+      margin-bottom: 10px;
+    }
+
+    .cvv-input {
+      width: 100%;
+      padding: 10px;
+      font-size: 16px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+
+    .place-order-btn {
+      width: 100%;
+      padding: 10px;
+      font-size: 16px;
+      background-color: #4CAF50;
+      color: #fff;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    .place-order-btn:hover {
+      background-color: #3e8e41;
+    }
+
+
+    .container-address {
+      width: 80%;
+      margin: 50px auto;
+      padding: 20px;
+      background-color: #fff;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+
+    #selectAddress {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .grid-container-address {
+      display: flex;
+      flex-direction: column;
+      margin-top: 20px;
+    }
+
+    .grid-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px;
+      background-color: #f2f2f2;
+      font-weight: bold;
+      border-bottom: 2px solid #ccc;
+    }
+
+    .grid-cell {
+      flex: 1;
+      padding: 10px;
+      text-align: center;
+    }
+
+    .grid-body {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .grid-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px;
+      border-bottom: 1px solid #ddd;
+    }
+
+    .radio-button {
+      margin-right: 10px;
+    }
+  </style>
+</head>
+<main>
+  <div class="container">
+    <h1>Checkout</h1>
+    <div id="cart" class="cart">
+      <div class="cart-row">
+        <div class="image">
+          <p>Image</p>
+        </div>
+        <div class="item-name">
+          <p>Name</p>
+        </div>
+        <div class="price">
+          <p>Price</p>
+        </div>
+        <div class="quantity">
+          <p>Quantity</p>
+        </div>
+        <div class="subtotal">
+          <p>Subtotal</p>
+        </div>
+        <div class="edit">
+          <p></p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section1">
+
+
+
+    <div class="order-total">
+      <h3>Order Summary</h3>
+      <table>
+        <tr>
+          <td>Cart Subtotal</td>
+          <td id="cart_subtotal">123</td>
+        </tr>
+        <tr>
+          <td>Shipping</td>
+          <td>Rs 50</td>
+        </tr>
+        <tr>
+          <td>Total</td>
+          <td class="total" id="total">$0.00</td>
+        </tr>
+      </table>
+    </div>
+
+    <div class="section2">
+      <div class="container-address">
+        <h1 id="selectAddress">Select Your Address</h1>
+        <div class="grid-container-address">
+          <div class="grid-header">
+            <div class="grid-cell">Select</div>
+            <div class="grid-cell">Address</div>
+            <div class="grid-cell">Pin Code</div>
+            <div class="grid-cell">City</div>
+            <div class="grid-cell">State</div>
+          </div>
+          <div class="grid-body" id="grid-body"></div>
+        </div>
+        <button class="select-button" id="select-address-btn">Select Address</button>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="container1">
+    <div class="payment-methods">
+      <h3 class="payment-methods-title">Payment Methods</h3>
+      <form class="payment-methods-form">
+        <label for="payment-method" class="payment-method-label">Select Payment Method:</label>
+        <select id="payment-method" name="payment-method" class="payment-method-select">
+          <option value="cash">Cash on Delivery</option>
+          <option value="card">Credit/Debit Card</option>
+          <option value="paypal">PayPal</option>
+        </select>
+        <br><br>
+        <label for="card-number" class="card-number-label">Card Number:</label>
+        <input type="text" id="card-number" name="card-number" class="card-number-input" placeholder="Enter Card Number">
+        <br><br>
+        <label for="expiry-date" class="expiry-date-label">Expiry Date:</label>
+        <input type="date" id="expiry-date" name="expiry-date" class="expiry-date-input" placeholder="Enter Expiry Date">
+        <br><br>
+        <label for="cvv" class="cvv-label">CVV:</label>
+        <input type="password" id="cvv" name="cvv" class="cvv-input" placeholder="Enter CVV">
+        <br><br>
+        <button type="button" id="place-order-btn" class="place-order-btn buy-button">Place Order</button>
+      </form>
+    </div>
+
+  </div>
+
+
+
+</main>
+<script>
+  async function runScript() {
+    let buyingItemArray = JSON.parse(localStorage.getItem('buyingItem')) || [];
+
+    const cartElement = document.getElementById('cart');
+    const totalElement = document.getElementById('total');
+    const cart_subtotal = document.getElementById('cart_subtotal');
+
+    async function fetchAddress() {
+      let res = await fetch('/fetchAdresssForCheckout');
+
+      let result = await res.json();
+      return result.data;
+    }
+
+    let userAddresses = await fetchAddress();
+    console.log(userAddresses, "address");
+
+
+
+    function removeItemFun(id) {
+
+      buyingItemArray = buyingItemArray.filter(item => item.user_id !== id);
+      localStorage.setItem('buyingItem', JSON.stringify(buyingItemArray));
+      updateUI();
+    }
+
+    function updateTotal() {
+      const total = buyingItemArray.reduce((acc, item) => {
+        return acc + +item.subtotal;
+      }, 0);
+
+      cart_subtotal.textContent = `Rs ${total.toFixed(2)}`;
+      totalElement.textContent = `Rs ${(+total + 50).toFixed(2)}`;
+    }
+
+    function updateUI() {
+      cartElement.innerHTML = `
+                <div class="cart-row">
+                    <div class="image"><p>Image</p></div>
+                    <div class="item-name"><p>Name</p></div>
+                    <div class="price"><p>Price</p></div>
+                    <div class="quantity"><p>Quantity</p></div>
+                    <div class="subtotal"><p>Subtotal</p></div>
+                    <div class="edit"><p></p></div>
+                </div>
+            `;
+
+      console.log(buyingItemArray, "Array");
+
+
+      buyingItemArray.forEach(item => {
+        const cartRow = document.createElement('div');
+        cartRow.classList.add('cart-row');
+
+        cartRow.innerHTML = `
+                    <div class="image"><img src="${item.image_path}" alt="Item"></div>
+                    <div class="item-name">${item.product_name}</div>
+                    <div class="price">${item.price.toFixed(2)}</div>
+                    <div class="quantity">${item.quantity}</div>
+                    <div class="subtotal">${(+item.subtotal).toFixed(2)}</div>
+                    <div class="remove"><button class="itemremove" onclick="removeItemFun(${item.user_id})">Remove</button></div>
+                `;
+
+        const subtotalElement = cartRow.querySelector('.subtotal');
+
+
+
+        cartElement.appendChild(cartRow);
+      });
+
+      updateTotal();
+    }
+
+    updateUI();
+
+    let placeOrderBtn = document.getElementById('place-order-btn');
+    placeOrderBtn.addEventListener('click', () => {
+      const paymentMethod = document.getElementById('payment-method').value;
+      const cardNumber = document.getElementById('card-number').value;
+      const expiryDate = document.getElementById('expiry-date').value;
+      const cvv = document.getElementById('cvv').value;
+      console.log(paymentMethod, cardNumber, expiryDate, cvv);
+
+
+      localStorage.removeItem('buyingItem');
+      window.location.href = '/thank-you';
+    });
+
+    function populateGrid() {
+      const gridBody = document.getElementById('grid-body');
+
+      userAddresses.forEach(item => {
+        const row = document.createElement('div');
+        row.classList.add('grid-row');
+        row.innerHTML = `
+                    <div class="grid-cell">
+                        <input type="radio" name="address" value="${item.address}" class="radio-button">
+                    </div>
+                    <div class="grid-cell">${item.address}</div>
+                    <div class="grid-cell">${item.pin_code}</div>
+                    <div class="grid-cell">${item.city}</div>
+                    <div class="grid-cell">${item.state}</div>
+                `;
+        gridBody.appendChild(row);
+      });
+    }
+
+    document.getElementById('select-address-btn').addEventListener('click', () => {
+      const selectedAddress = document.querySelector('input[name="address"]:checked');
+      if (selectedAddress) {
+        alert(`You have selected: ${selectedAddress.value}`);
+      } else {
+        alert('Please select an address to proceed.');
+      }
+    });
+
+    populateGrid();
+  }
+  runScript();
+</script>
+<%- include('partials/footer') %>

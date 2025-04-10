@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <style>
+      i{
+        color: hsl(176, 88%, 27%) ;
+      }
+    </style>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="/css/admin.common.css" />
+    <link rel="stylesheet" href="/css/admin.values.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+    <link
+      href="https://cdn.jsdelivr.net/npm/remixicon@4.5.0/fonts/remixicon.css"
+      rel="stylesheet"
+    />
+    <link rel="icon" href="https://res.cloudinary.com/dozcrwtud/image/upload/v1743746754/White_Minimalist_Online_Fashion_Shop_Bag_Logo_1_od2d4q.png">
+    <title>values - Admin panel</title>
+   
+  </head>
+
+  <body>
+    <aside class="sidebar">
+      <img
+        id="logo"
+        src="https://res.cloudinary.com/dozcrwtud/image/upload/v1743746754/White_Minimalist_Online_Fashion_Shop_Bag_Logo_1_od2d4q.png"
+      />
+      <ul>
+        <li><a href="/admin/dashboard">Main Dashboard</a></li>
+        <li><a href="/admin/vendors">Vendor Details</a></li>
+        <li><a href="/admin/sales">Sales</a></li>
+        <li><a href="/admin/orders">Order Details</a></li>
+        <li><a href="/admin/pending-verification">Pending Verification</a></li>
+        <li><a href="/admin/offers">Offers</a></li>
+        <li><a href="/admin/users">Users</a></li>
+        <li><a href="/admin/available-products">Available Products</a></li>
+        <li><a href="/admin/contacttovendor">Contact To Vendor</a></li>
+        <li><a href="/admin/notifications">Notifications</a></li>
+        <li><a href="/admin/values">Manage Values</a></li>
+        <li><a href="/admin/shipment">Shipment Details</a></li>
+      </ul>
+    </aside>
+
+    
+
+    <div class="container">
+      
+      <div class="app">
+        <div class="content">
+          <form id="valuesform">
+            <label for="Key">Key</label>
+            <input type="text" id="Key" name="Key" placeholder="Key.." />
+
+            <label for="Value">Value</label>
+            <input type="text" id="Value" name="Value" placeholder="Value.." />
+            <label for="cars">Choose for :</label>
+
+            <select name="for" id="for">
+              <option value="privacy-policy">privacy-policy</option>
+              <option value="terms-and-condition">terms-and-condition</option>
+              <option value="website">website</option>
+              <option value="return-policy">return-policy</option>
+            </select>
+
+            <input type="submit" value="create pair" />
+          </form>
+        </div>
+        <h1>values</h1>
+        <label for="cars">filter :</label>
+        <select name="for" id="for" onchange="filter(this.value)">
+          <option value="privacy-policy">privacy-policy</option>
+          <option value="terms-and-condition">terms-and-condition</option>
+          <option value="website">website</option>
+          <option value="return-policy">return-policy</option>
+        </select>
+        <table id="customers">
+          <tr>
+            <th>Value for</th>
+            <th>Key</th>
+            <th>Value</th>
+            <th>updated_at</th>
+            <th>created_at</th>
+            <th>edit</th>
+            <th>delete</th>
+          </tr>
+          <tbody id="tbody"></tbody>
+        </table>
+      </div>
+
+      <footer class="ecommerce-footer" >
+        <div class="footer-container">
+          <div class="footer-section">
+            <h3>Shop</h3>
+            <ul>
+              <li><a href="#">Categories</a></li>
+              <li><a href="#">New Arrivals</a></li>
+              <li><a href="#">Best Sellers</a></li>
+              <li><a href="#">Deals</a></li>
+            </ul>
+          </div>
+          <div class="footer-section">
+            <h3>Customer Service</h3>
+            <ul>
+              <li><a href="#">Contact Us</a></li>
+              <li><a href="#">Shipping Info</a></li>
+              <li><a href="#">Returns</a></li>
+              <li><a href="#">FAQ</a></li>
+            </ul>
+          </div>
+          <div class="footer-section">
+            <h3>About Us</h3>
+            <ul>
+              <li><a href="#">Our Story</a></li>
+              <li><a href="#">Careers</a></li>
+              <li><a href="#">Privacy Policy</a></li>
+              <li><a href="#">Terms of Service</a></li>
+            </ul>
+          </div>
+          <div class="footer-section">
+            <h3>Connect</h3>
+            <ul>
+              <li>
+                <a href="#"><i class="ri-twitter-fill"></i></a>
+              </li>
+              <li>
+                <a href="#"><i class="ri-instagram-fill"></i></a>
+              </li>
+              <li>
+                <a href="#"><i class="ri-facebook-circle-fill"></i></a>
+              </li>
+            </ul>
+          </div>
+        </div>
+        <div class="footer-bottom">
+          <p>&copy; 2025 Your E-commerce Store. All rights reserved.</p>
+        </div>
+      </footer>
+
+    </div>
+  </body>
+  <script src="/javascript/admin.values.js"></script>
+</html>

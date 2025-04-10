@@ -1,0 +1,36 @@
+<%- include('partials/header') %>
+
+<head>
+  <title>Privacy Policy</title>
+  <link rel="stylesheet" href="/css/privacyPolicy.css">
+</head>
+
+<div class="container">
+  <div class="arrivingdata" id="arrivingdata"></div>
+</div>
+<script>
+  async function fetchtandc() {
+    document.getElementById("arrivingdata").innerHTML = "";
+      const response = await fetch("/privacypolicy", {
+        method: "POST",
+      });
+      if (!response.ok) {
+        throw new Error(`Response status: ${response.status}`);
+      }
+      const json = await response.json();
+      let results = json.data;
+      let tablebody = document.getElementById("arrivingdata");
+      results.forEach((result) => {
+        let div = document.createElement('div');
+      div.classList.add("section")
+        const row = `<div class="section">
+    <h2>${result.title}</h2>
+    <p>${result.content}</p>
+  </div>`;
+  div.innerHTML += row;
+  tablebody.appendChild(div)
+      });
+    }
+    fetchtandc()
+</script>
+<%- include('partials/footer') %>

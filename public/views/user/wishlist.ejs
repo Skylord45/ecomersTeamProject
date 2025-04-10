@@ -1,0 +1,192 @@
+<%- include('partials/header') %>
+
+<head>
+  <title>Home</title>
+  <style>
+    *body {
+      margin: 0;
+      padding: 0;
+      font-family: Verdana, Geneva, Tahoma, sans-serif;
+    }
+
+    main {
+      margin: 70px;
+      font-family: Verdana, Geneva, Tahoma, sans-serif;
+    }
+
+    main .container .cart {
+      width: 100%;
+      display: flex;
+      gap: 10px;
+      flex-direction: column;
+    }
+
+    main .container .cart .cart-row {
+      height: 20%;
+      display: grid;
+      grid-template-columns: 1fr 2fr 1fr 1fr 1fr 1fr;
+      align-items: center;
+      text-align: center;
+    }
+
+    main .container .cart .cart-row img {
+      height: 100px;
+      width: auto;
+    }
+
+    main .container .cart .cart-row input {
+      width: 50%;
+      padding: 5px;
+      font-size: 14px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      outline: none;
+    }
+
+    main .container .cart .cart-row .edit {
+      padding: 5px;
+      width: 50px;
+    }
+
+    .item-name-description .item-name-details {
+      color: #088179;
+      margin-bottom: -8px;
+    }
+
+    main .order-total {
+      border: 1px solid #ccc;
+      width: 80%;
+      color: grey;
+      padding: 0 20px 0;
+      margin: 50px auto;
+    }
+
+    table {
+      width: 100%;
+      color: black;
+      border-style: none;
+      border: 1px solid #ccc;
+      border-collapse: collapse;
+    }
+
+    th,
+    td {
+      border: 1px solid #ddd;
+      padding: 8px;
+      text-align: left;
+    }
+
+    th {
+      background-color: #f2f2f2;
+    }
+
+    .checkoutbtn {
+      text-align: center;
+    }
+
+    .buy-button {
+      justify-content: center;
+      align-items: center;
+      padding: 5px 10px;
+      margin: 20px 0 20px;
+      border: rgba(5, 145, 145, 0.808);
+      border-radius: 5px;
+      width: 200px;
+      height: 50px;
+      font-size: 15px;
+      color: white;
+      background-color: rgba(5, 145, 145, 0.808);
+    }
+
+    .buy-button:hover {
+      cursor: pointer;
+      background-color: white;
+      color: rgba(5, 145, 145, 0.808);
+      border: 2px solid rgba(5, 145, 145, 0.808);
+    }
+  </style>
+</head>
+<main>
+  <div class="container">
+    <h1>WishList</h1>
+    <div id="cart" class="cart">
+      <div class="cart-row">
+        <div class="image">
+          <p>Image</p>
+        </div>
+        <div class="item-name">
+          <p>Name</p>
+        </div>
+        <div class="price">
+          <p>Price</p>
+        </div>
+
+      </div>
+    </div>
+  </div>
+  <!-- <div class="order-total">
+    <h3>Cart Total</h3>
+    <table>
+      <tr>
+        <td>Cart Subtotal</td>
+        <td id="cart_subtotal">123</td>
+      </tr>
+      <tr>
+        <td>Shipping</td>
+        <td>Rs 50</td>
+      </tr>
+      <tr>
+        <td>Total</td>
+        <td class="total" id="total">0.00</td>
+      </tr>
+    </table>
+    <div class="checkoutbtn">
+      <button type="button" id="cartBuyBtn" class="buy-button">
+        Proceed to checkout
+      </button>
+    </div>
+  </div> -->
+</main>
+<script>
+  async function runScript() {
+    async function fetchWishlistData() {
+      let res = await fetch('/fetchWishlistData')
+
+      let result = await res.json()
+      console.log(result, "ye mera vala result")
+      let wishlisrArray = result.data
+      return wishlisrArray
+    }
+    let cartDetails = await fetchWishlistData();
+
+    console.log(cartDetails, "cart details");
+
+
+
+
+    const cartElement = document.getElementById("cart");
+
+
+
+
+    cartDetails.forEach((item) => {
+      console.log(item)
+      const cartRow = document.createElement("div");
+
+      cartRow.classList.add("cart-row");
+
+      cartRow.innerHTML = `
+
+        <div class="image"><img src="#" alt="Item"></div>
+
+        <div class="item-name-description"><p class="item-name-details">${item.product_name}</p><p class="item-description-details">${item.description}</p></div>
+
+        <div class="price">${+(item.price)} &#8377;</div>
+    `;
+      cartElement.appendChild(cartRow)
+
+    });
+  }
+  runScript();
+</script>
+<%- include('partials/footer') %>
